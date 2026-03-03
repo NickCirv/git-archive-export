@@ -1,0 +1,37 @@
+{
+  "name": "git-archive-export",
+  "version": "1.0.0",
+  "description": "Export files from git at any commit, branch, or tag. Zero dependencies.",
+  "type": "module",
+  "bin": {
+    "git-archive-export": "./index.js",
+    "gax": "./index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "developer-tools",
+    "cli",
+    "nodejs",
+    "zero-dependencies",
+    "git",
+    "archive",
+    "export",
+    "history"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NickCirv/git-archive-export.git"
+  },
+  "homepage": "https://github.com/NickCirv/git-archive-export#readme",
+  "bugs": {
+    "url": "https://github.com/NickCirv/git-archive-export/issues"
+  }
+}
