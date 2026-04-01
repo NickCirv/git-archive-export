@@ -1,3 +1,5 @@
+![Banner](banner.svg)
+
 # git-archive-export
 
 > Export files from git history. Any commit, branch, or tag. Zero dependencies.
