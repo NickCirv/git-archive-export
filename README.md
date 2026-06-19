@@ -1,139 +1,70 @@
-![Banner](banner.svg)
+<div align="center">
 
 # git-archive-export
 
-> Export files from git history. Any commit, branch, or tag. Zero dependencies.
+**Pull any file or directory out of git history — any commit, branch, or tag.**
 
-```
-gax src/app.js@main
-gax src/app.js@abc1234 --output app-v1.js
-gax src/@v1.0.0 --output ./v1-src/
-gax --diff v1.0.0 v2.0.0 src/
-```
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue?labelColor=0B0A09)](LICENSE)
+[![Zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen?labelColor=0B0A09)](package.json)
+[![Node >=18](https://img.shields.io/badge/node-%3E%3D18-339933?labelColor=0B0A09)](package.json)
+
+</div>
 
 ## Install
 
 ```bash
-# Run without installing (npx)
-npx git-archive-export --help
-
-# Install globally
-npm install -g git-archive-export
+npx github:NickCirv/git-archive-export --help
 ```
 
-## Quick Start
-
-```
-$ gax src/app.js@main
-... prints file contents to stdout ...
-
-$ gax src/app.js@abc1234 --output app-v1.js
-✔ Exported src/app.js @ abc1234 → /pwd/app-v1.js (4096 bytes)
-
-$ gax --refs
-Branches:
-  main
-  feature/new-ui
-Tags:
-  v1.0.0
-  v2.0.0
-```
-
-## Usage Patterns
-
-### Export a file at any ref
+Or install globally:
 
 ```bash
-# Print file to stdout (pipe-friendly)
+npm install -g github:NickCirv/git-archive-export
+```
+
+## Usage
+
+```bash
+# Print a file from main to stdout
 gax src/app.js@main
 
-# Save to disk at a specific commit hash
-gax src/app.js@abc1234 --output app-v1.js
+# Save a file at a specific commit to disk
+gax src/app.js@abc1234 -o app-v1.js
 
-# Use a tag
-gax src/app.js@v1.0.0 --output app-legacy.js
+# Export a directory as a tar archive at a tag
+gax src/@v1.0.0 -o ./v1-src.tar
 
-# Use a remote branch
-gax src/app.js@origin/main
-```
+# Export as zip (built-in zlib, no system zip needed)
+gax src/ --format zip -o archive.zip
 
-### Export a directory
-
-```bash
-# Export entire src/ at a tag as .tar (default)
-gax src/@v1.0.0 --output ./v1-src.tar
-
-# Export as zip using built-in zlib (no system zip needed)
-gax src/ --format zip --output archive.zip
-
-# Export the whole repo root at a ref
-gax ./@main --format tar --output snapshot.tar
-```
-
-### Diff between refs
-
-```bash
-# What changed in src/ between two tags?
+# Show what changed between two tags
 gax --diff v1.0.0 v2.0.0 src/
 
-# Full repo diff between two commits
-gax --diff abc1234 def5678
-```
-
-### File history and blame
-
-```bash
-# Show who changed a file and when
+# File history and blame
 gax --log src/app.js
-
-# Git blame for a file at a specific branch
 gax --blame src/app.js@main
 
-# Blame at a specific commit
-gax --blame src/app.js@abc1234
-```
-
-### Check existence
-
-```bash
-# Returns exit 0 if file exists, exit 1 if not
-gax --exists src/app.js@main
-
-# Use in scripts
-if gax --exists config.json@v1.0.0; then
-  echo "config existed in v1.0.0"
-fi
-```
-
-### List refs
-
-```bash
-# Show all branches and tags in the repo
+# List all branches and tags
 gax --refs
-```
 
-## Options
+# Check if a file existed at a ref (exit 0/1)
+gax --exists config.json@v1.0.0
+```
 
 | Flag | Short | Description |
 |------|-------|-------------|
 | `--output <path>` | `-o` | Write to file instead of stdout |
 | `--format <fmt>` | | `tar` (default) or `zip` for directory exports |
 | `--diff <ref1> <ref2>` | | Show what changed between two refs |
-| `--log [path]` | | Git log for a specific file |
-| `--blame <path>[@ref]` | | Git blame at ref |
+| `--log [path]` | | Git log for a file |
+| `--blame <path>[@ref]` | | Git blame at a ref |
 | `--refs` | | List all branches and tags |
-| `--exists <path>[@ref]` | | Check if file exists (exit 0/1) |
+| `--exists <path>[@ref]` | | Check existence (exit 0 = found, exit 1 = not found) |
 | `--help` | `-h` | Show help |
 
-## Ref Parsing
+## What it does
 
-The tool splits on the **last** `@`, so refs containing `/` work correctly:
-
-```
-src/app.js@origin/main   → path: src/app.js,  ref: origin/main
-src/@feature/auth        → path: src/,         ref: feature/auth
-src/app.js               → path: src/app.js,   ref: HEAD
-```
+`gax` wraps `git show`, `git archive`, `git diff`, `git log`, and `git blame` behind a single ergonomic CLI. Ref parsing splits on the **last** `@`, so refs containing `/` work correctly (`origin/main`, `feature/auth`). Directory exports produce `.tar` via native `git archive` or `.zip` via Node's built-in `zlib` — no external archiver needed. All git calls use `execFileSync`/`spawnSync`, never shell string interpolation, so there is no injection risk.
 
 ## Requirements
 
@@ -141,21 +72,6 @@ src/app.js               → path: src/app.js,   ref: HEAD
 - `git` in PATH
 - Must be run inside a git repository
 
-## Why Zero Dependencies?
-
-Only Node.js built-ins: `fs`, `path`, `child_process`, `zlib`.
-
-- No npm install needed beyond the tool itself
-- No supply-chain risk
-- Works offline after initial install
-- Tiny footprint
-
-## Security
-
-- Uses `execFileSync`/`spawnSync` only — no shell string interpolation, no injection risk
-- No network calls
-- No credentials or tokens required
-
 ---
 
-Built with Node.js · Zero dependencies · MIT License
+<sub>Zero dependencies · Node ≥18 · MIT · by <a href="https://github.com/NickCirv">NickCirv</a></sub>
